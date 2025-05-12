@@ -10,4 +10,5 @@ catboost
 dill
 pymongo
 certifi
+mlflow
 ##-e .

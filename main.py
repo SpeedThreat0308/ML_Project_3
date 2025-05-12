@@ -8,6 +8,8 @@ from src.entity.config_entity import DataIngestionConfig
 from src.entity.config_entity import TrainingPipelineConfig
 from src.entity.config_entity import DataValidationConfig
 from src.entity.config_entity import DataTransformationConfig
+from src.entity.config_entity import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
 
 if __name__=="__main__":
     try:
@@ -30,5 +32,11 @@ if __name__=="__main__":
        data_transformation_artifact=data_transformation.initiate_data_transformation()
        logging.info("Data Transformation Completed")
        print(data_transformation_artifact)
+       model_trainer_config=ModelTrainerConfig(training_pipeline_config)
+       model_trainer=ModelTrainer(model_trainer_config,data_transformation_artifact)
+       logging.info("Initiated Model Trainer Stage")
+       model_trainer_artifact=model_trainer.initiate_model_trainer()
+       logging.info("Model Trainer Completed")
+       print(model_trainer_artifact)
     except Exception as e:
         raise NetworkSecurityException(e,sys)

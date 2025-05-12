@@ -19,6 +19,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import r2_score
 from src.utils.main_utils.utils import evaluate_models
+import dagshub
+dagshub.init(repo_owner='SpeedThreat0308', repo_name='ML_Project_3', mlflow=True)
 
 
 class ModelTrainer:

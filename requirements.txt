@@ -11,4 +11,6 @@ dill
 pymongo
 certifi
 mlflow
+fastapi
+uvicorn
 ##-e .

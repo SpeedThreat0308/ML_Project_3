@@ -7,6 +7,7 @@ from src.exception.exception import NetworkSecurityException
 from src.utils.main_utils.utils import load_object
 from src.logging.logger import logging
 from src.pipeline.train_pipeline import TrainingPipeline
+from src.utils.ml_utils.model.estimator import NetworkModel
 from src.constant.training_pipeline import DATA_INGESTION_DATABASE_NAME, DATA_INGESTION_COLLECTION_NAME
 
 
@@ -17,6 +18,8 @@ from fastapi.responses import Response
 from starlette.responses import RedirectResponse
 import pandas as pd
 import numpy as np  
+from fastapi.templating import Jinja2Templates
+templates=Jinja2Templates(directory="./templates")
 
 load_dotenv()
 ca=certifi.where()
@@ -50,6 +53,25 @@ async def train_route():
         train_pipeline.run_pipeline()
         return Response("Training is successful")
     
+    except Exception as e:
+        raise NetworkSecurityException(e,sys) from e
+    
+@app.post("/predict")
+async def predict(request:Request, file: UploadFile=File(...)):
+    try:
+        df=pd.read_csv(file.file)
+        preprocessor=load_object("final_models/preprocessor.pkl")
+        model=load_object("final_models/model.pkl")
+        network_model=NetworkModel(preprocessor=preprocessor,model=model)
+        print(df.iloc[0])
+        y_pred=network_model.predict(df)
+        print(y_pred)
+        df["predicted_column"]=y_pred
+        print(df["predicted_column"])
+
+        df.to_csv("./prediction_output/output.csv")
+        table_html=df.to_html(classes="table table-striped")
+        return templates.TemplateResponse("data.html", {"request": request, "table_html": table_html})
     except Exception as e:
         raise NetworkSecurityException(e,sys) from e
     
